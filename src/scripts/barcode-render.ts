@@ -59,3 +59,44 @@ export async function renderBarcode(
   valueDiv.textContent = data;
   container.appendChild(valueDiv);
 }
+
+/** Small barcode preview for card tiles */
+export async function renderBarcodeSmall(
+  container: HTMLElement,
+  data: string,
+  format: string,
+): Promise<void> {
+  container.innerHTML = '';
+
+  if (QR_LIKE_FORMATS.includes(format)) {
+    const canvas = document.createElement('canvas');
+    await QRCode.toCanvas(canvas, data, {
+      width: 36,
+      margin: 0,
+      color: { dark: '#000000', light: 'rgba(0,0,0,0)' },
+    });
+    container.appendChild(canvas);
+  } else {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    container.appendChild(svg);
+    try {
+      JsBarcode(svg, data, {
+        format: FORMAT_MAP[format] || 'CODE128',
+        width: 1,
+        height: 36,
+        displayValue: false,
+        margin: 0,
+        background: 'transparent',
+      });
+    } catch {
+      JsBarcode(svg, data, {
+        format: 'CODE128',
+        width: 1,
+        height: 36,
+        displayValue: false,
+        margin: 0,
+        background: 'transparent',
+      });
+    }
+  }
+}

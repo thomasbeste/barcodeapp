@@ -8,16 +8,30 @@ interface Props {
 }
 
 const { id, storeName, barcodeData, format, color } = Astro.props;
-const stripeColor = color || '#4a90d9';
+const cardColor = color || '#4a90d9';
+
+// Generate a lighter tint for the card background
+function hexToRgb(hex: string) {
+  const h = hex.replace('#', '');
+  return {
+    r: parseInt(h.substring(0, 2), 16),
+    g: parseInt(h.substring(2, 4), 16),
+    b: parseInt(h.substring(4, 6), 16),
+  };
+}
+const rgb = hexToRgb(cardColor);
+const bgTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08)`;
+const borderTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
 ---
 
 <div class="card-flip-container" data-card-id={id} data-barcode={barcodeData} data-format={format} role="button" tabindex="0">
   <div class="card-tile">
-    <div class="card-tile-front">
-      <div class="card-tile-stripe" style={`background: ${stripeColor}`}></div>
+    <div class="card-tile-front" style={`background: ${bgTint}; border: 2px solid ${borderTint}`}>
+      <div class="card-tile-stripe" style={`background: ${cardColor}`}></div>
       <div class="card-tile-body">
-        <div class="card-tile-name">{storeName}</div>
-        <div class="card-tile-format">{format}</div>
+        <div class="card-tile-name" style={`color: ${cardColor}`}>{storeName}</div>
+        <div class="card-tile-barcode-preview" data-barcode={barcodeData} data-format={format}></div>
+        <div class="card-tile-code">{barcodeData}</div>
       </div>
     </div>
     <div class="card-tile-back">
