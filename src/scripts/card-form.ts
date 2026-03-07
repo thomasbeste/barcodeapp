@@ -397,4 +397,46 @@ export function initForms() {
 
     window.location.reload();
   });
+
+  // Edit button — from fullscreen modal
+  document.getElementById('barcode-edit-btn')!.addEventListener('click', async () => {
+    const id = getCurrentCardId();
+    if (!id) return;
+
+    const res = await fetch(`${BASE}api/cards/${id}`);
+    if (!res.ok) return;
+    const card = await res.json();
+
+    (document.getElementById('edit-card-id') as HTMLInputElement).value = String(card.id);
+    (document.getElementById('edit-store-name') as HTMLInputElement).value = card.storeName;
+    (document.getElementById('edit-barcode-data') as HTMLInputElement).value = card.barcodeData;
+    (document.getElementById('edit-format') as HTMLSelectElement).value = card.format;
+    (document.getElementById('edit-notes') as HTMLTextAreaElement).value = card.notes || '';
+    (document.getElementById('edit-color') as HTMLInputElement).value = card.color || '#4a90d9';
+
+    document.querySelectorAll('#edit-color-options .color-swatch').forEach(s => {
+      s.classList.toggle('selected', (s as HTMLElement).dataset.color === (card.color || '#4a90d9'));
+    });
+
+    document.getElementById('barcode-view')!.style.display = 'none';
+    document.getElementById('barcode-edit')!.style.display = 'block';
+    document.getElementById('barcode-edit')!.classList.add('active');
+  });
+
+  // Delete button — from fullscreen modal
+  document.getElementById('barcode-delete-btn')!.addEventListener('click', async () => {
+    const id = getCurrentCardId();
+    if (!id) return;
+
+    if (!confirm('Delete this card?')) return;
+
+    const res = await fetch(`${BASE}api/cards/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      alert('Failed to delete card');
+      return;
+    }
+
+    closeBarcodeModal();
+    window.location.reload();
+  });
 }
