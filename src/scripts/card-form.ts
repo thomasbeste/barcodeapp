@@ -316,7 +316,10 @@ export function initForms() {
     closeActionSheet();
 
     const res = await fetch(`${BASE}api/cards/${id}`);
-    if (!res.ok) return;
+    if (!res.ok) {
+      alert(`Failed to load card: ${res.status} URL=${BASE}api/cards/${id}`);
+      return;
+    }
     const card = await res.json();
 
     (document.getElementById('edit-card-id') as HTMLInputElement).value = String(card.id);
@@ -391,11 +394,12 @@ export function initForms() {
 
     if (!confirm('Delete this card?')) return;
 
+    const deleteUrl = `${BASE}api/cards/${id}`;
     try {
-      const res = await fetch(`${BASE}api/cards/${id}`, { method: 'DELETE' });
+      const res = await fetch(deleteUrl, { method: 'DELETE' });
       if (!res.ok) {
         const body = await res.text();
-        alert(`Failed to delete card: ${res.status} ${body}`);
+        alert(`Failed to delete card: ${res.status} URL=${deleteUrl} ${body}`);
         return;
       }
     } catch (err) {
