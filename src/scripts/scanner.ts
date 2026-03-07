@@ -58,3 +58,17 @@ export async function stopScanner(): Promise<void> {
     scanner = null;
   }
 }
+
+export async function scanImageFile(
+  file: File,
+): Promise<{ data: string; format: string }> {
+  const html5Qrcode = new Html5Qrcode('scanner-file-tmp');
+  try {
+    const result = await html5Qrcode.scanFileV2(file, true);
+    const formatNum = result.result.format?.format;
+    const formatName = formatNum !== undefined ? (FORMAT_NAME_MAP[formatNum] || 'CODE128') : 'CODE128';
+    return { data: result.decodedText, format: formatName };
+  } finally {
+    html5Qrcode.clear();
+  }
+}

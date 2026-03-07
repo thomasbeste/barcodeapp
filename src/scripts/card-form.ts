@@ -1,5 +1,5 @@
 import { openBarcodeModal, closeBarcodeModal, closeAddModal, getCurrentCard } from './modal';
-import { startScanner, stopScanner } from './scanner';
+import { startScanner, stopScanner, scanImageFile } from './scanner';
 
 function setupColorSwatches(containerId: string, inputId: string) {
   const container = document.getElementById(containerId)!;
@@ -91,26 +91,188 @@ export function initForms() {
     window.location.reload();
   });
 
-  // Scan tab
+  // Show scan result helper
+  function showScanResult(data: string, format: string) {
+    const scanResult = document.getElementById('scan-result')!;
+    (document.getElementById('scan-barcode-data') as HTMLInputElement).value = data;
+    (document.getElementById('scan-format') as HTMLInputElement).value = format;
+    scanResult.style.display = 'block';
+  }
+
+  // Scan method switcher (camera / image / clipboard)
+  let activeScanMethod = 'camera';
+
+  function switchScanMethod(method: string) {
+    activeScanMethod = method;
+    stopScanner();
+
+    document.querySelectorAll('.scan-method-btn').forEach(btn => {
+      btn.classList.toggle('active', (btn as HTMLElement).dataset.scanMethod === method);
+    });
+
+    ['camera', 'image', 'clipboard'].forEach(m => {
+      const el = document.getElementById(`scan-method-${m}`);
+      if (el) el.style.display = m === method ? 'block' : 'none';
+    });
+
+    // Auto-start camera when switching to camera method
+    if (method === 'camera') {
+      startCameraScanner();
+    }
+  }
+
+  async function startCameraScanner() {
+    const scanResult = document.getElementById('scan-result')!;
+    scanResult.style.display = 'none';
+    try {
+      await startScanner('scanner-reader', (data, format) => {
+        stopScanner();
+        showScanResult(data, format);
+      });
+    } catch {
+      alert('Could not access camera. Make sure to allow camera permissions.');
+    }
+  }
+
+  document.querySelectorAll('.scan-method-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchScanMethod((btn as HTMLElement).dataset.scanMethod!);
+    });
+  });
+
+  // Scan tab (manual/scan top-level tabs)
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const tab = (btn as HTMLElement).dataset.tab;
       if (tab === 'scan') {
         const scanResult = document.getElementById('scan-result')!;
         scanResult.style.display = 'none';
-
-        try {
-          await startScanner('scanner-reader', (data, format) => {
-            stopScanner();
-            (document.getElementById('scan-barcode-data') as HTMLInputElement).value = data;
-            (document.getElementById('scan-format') as HTMLInputElement).value = format;
-            scanResult.style.display = 'block';
-          });
-        } catch {
-          alert('Could not access camera. Make sure to allow camera permissions.');
-        }
+        switchScanMethod(activeScanMethod);
       }
     });
+  });
+
+  // Image file scanning
+  const scanFileInput = document.getElementById('scan-file-input') as HTMLInputElement;
+  const scanDropzone = document.getElementById('scan-dropzone')!;
+  const scanFileStatus = document.getElementById('scan-file-status')!;
+  const scanFilePreview = document.getElementById('scan-file-preview')!;
+  const scanFileImg = document.getElementById('scan-file-img') as HTMLImageElement;
+
+  async function handleImageFile(file: File) {
+    scanFileStatus.textContent = 'Scanning image...';
+    scanFileStatus.style.color = 'var(--text-secondary)';
+
+    // Show preview
+    const url = URL.createObjectURL(file);
+    scanFileImg.src = url;
+    scanFilePreview.style.display = 'block';
+
+    try {
+      const { data, format } = await scanImageFile(file);
+      scanFileStatus.textContent = 'Barcode found!';
+      scanFileStatus.style.color = 'var(--primary)';
+      showScanResult(data, format);
+    } catch {
+      scanFileStatus.textContent = 'No barcode found in image. Try a clearer photo.';
+      scanFileStatus.style.color = 'var(--danger)';
+    }
+  }
+
+  scanFileInput.addEventListener('change', () => {
+    if (scanFileInput.files?.[0]) {
+      handleImageFile(scanFileInput.files[0]);
+    }
+  });
+
+  // Drag and drop
+  scanDropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    scanDropzone.classList.add('drag-over');
+  });
+  scanDropzone.addEventListener('dragleave', () => {
+    scanDropzone.classList.remove('drag-over');
+  });
+  scanDropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    scanDropzone.classList.remove('drag-over');
+    const file = (e as DragEvent).dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleImageFile(file);
+    }
+  });
+
+  // Clipboard scanning
+  const scanPasteArea = document.getElementById('scan-paste-area')!;
+  const scanPasteBtn = document.getElementById('scan-paste-btn')!;
+  const scanClipboardStatus = document.getElementById('scan-clipboard-status')!;
+
+  async function handleClipboardImage(blob: Blob) {
+    scanClipboardStatus.textContent = 'Scanning image...';
+    scanClipboardStatus.style.color = 'var(--text-secondary)';
+
+    const file = new File([blob], 'clipboard.png', { type: blob.type });
+    try {
+      const { data, format } = await scanImageFile(file);
+      scanClipboardStatus.textContent = 'Barcode found!';
+      scanClipboardStatus.style.color = 'var(--primary)';
+      showScanResult(data, format);
+    } catch {
+      scanClipboardStatus.textContent = 'No barcode found in image. Try a clearer image.';
+      scanClipboardStatus.style.color = 'var(--danger)';
+    }
+  }
+
+  // Paste event on the paste area
+  scanPasteArea.addEventListener('paste', (e) => {
+    const items = (e as ClipboardEvent).clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const blob = item.getAsFile();
+        if (blob) handleClipboardImage(blob);
+        return;
+      }
+    }
+    scanClipboardStatus.textContent = 'No image found in clipboard.';
+    scanClipboardStatus.style.color = 'var(--danger)';
+  });
+
+  // Also listen for paste globally when clipboard tab is active
+  document.addEventListener('paste', (e) => {
+    if (activeScanMethod !== 'clipboard') return;
+    const modal = document.getElementById('add-card-modal')!;
+    if (!modal.classList.contains('active')) return;
+
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const blob = item.getAsFile();
+        if (blob) handleClipboardImage(blob);
+        return;
+      }
+    }
+  });
+
+  // Read from clipboard button (Clipboard API)
+  scanPasteBtn.addEventListener('click', async () => {
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imageType = item.types.find(t => t.startsWith('image/'));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          handleClipboardImage(blob);
+          return;
+        }
+      }
+      scanClipboardStatus.textContent = 'No image in clipboard. Copy an image first.';
+      scanClipboardStatus.style.color = 'var(--danger)';
+    } catch {
+      scanClipboardStatus.textContent = 'Clipboard access denied. Try pasting with Ctrl+V instead.';
+      scanClipboardStatus.style.color = 'var(--danger)';
+    }
   });
 
   // Scan save button

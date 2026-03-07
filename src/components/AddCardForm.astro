@@ -56,12 +56,46 @@ import { BARCODE_FORMATS } from '../lib/barcode';
 
       <!-- Scan tab -->
       <div id="tab-scan" style="display:none">
-        <div class="scanner-container" id="scanner-container">
-          <div id="scanner-reader"></div>
+        <div class="scan-methods">
+          <button class="btn btn-secondary scan-method-btn active" data-scan-method="camera">Camera</button>
+          <button class="btn btn-secondary scan-method-btn" data-scan-method="image">Image File</button>
+          <button class="btn btn-secondary scan-method-btn" data-scan-method="clipboard">Clipboard</button>
         </div>
-        <p style="text-align:center; margin-top:0.75rem; color: var(--text-secondary); font-size: 0.85rem;">
-          Point camera at barcode
-        </p>
+
+        <!-- Camera scanning -->
+        <div id="scan-method-camera">
+          <div class="scanner-container" id="scanner-container">
+            <div id="scanner-reader"></div>
+          </div>
+          <p style="text-align:center; margin-top:0.75rem; color: var(--text-secondary); font-size: 0.85rem;">
+            Point camera at barcode
+          </p>
+        </div>
+
+        <!-- Image file scanning -->
+        <div id="scan-method-image" style="display:none">
+          <div class="scan-dropzone" id="scan-dropzone">
+            <p>Choose an image or drag & drop</p>
+            <input type="file" id="scan-file-input" accept="image/*" />
+          </div>
+          <div id="scan-file-preview" style="display:none">
+            <img id="scan-file-img" alt="Selected image" style="max-width:100%; border-radius:8px;" />
+          </div>
+          <p id="scan-file-status" style="text-align:center; margin-top:0.75rem; color: var(--text-secondary); font-size: 0.85rem;"></p>
+        </div>
+
+        <!-- Clipboard scanning -->
+        <div id="scan-method-clipboard" style="display:none">
+          <div class="scan-dropzone" id="scan-paste-area" tabindex="0">
+            <p>Paste an image (Ctrl+V / Cmd+V)</p>
+            <p style="font-size:0.8rem; color: var(--text-secondary); margin-top:0.5rem;">or tap the button below</p>
+          </div>
+          <button class="btn btn-secondary" id="scan-paste-btn" style="width:100%; margin-top:0.75rem;">Read from Clipboard</button>
+          <p id="scan-clipboard-status" style="text-align:center; margin-top:0.75rem; color: var(--text-secondary); font-size: 0.85rem;"></p>
+        </div>
+
+        <!-- Hidden element for html5-qrcode file scanning -->
+        <div id="scanner-file-tmp" style="display:none"></div>
         <div id="scan-result" style="display:none; margin-top:1rem;">
           <div class="form-group">
             <label for="scan-store-name">Store Name</label>
