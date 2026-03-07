@@ -119,56 +119,28 @@ body {
   inset: 0;
   transform: rotateY(180deg);
   overflow: hidden;
-}
-
-.card-tile-stripe {
-  height: 5px;
-  width: 100%;
-}
-
-.card-tile-body {
-  padding: 0.75rem 0.75rem 0.65rem;
-}
-
-.card-tile-name-row {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.5rem;
-}
-
-.card-tile-logo {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.card-tile-name {
-  font-size: 1rem;
-  font-weight: 700;
-  word-break: break-word;
-  letter-spacing: 0.02em;
+  justify-content: center;
+  padding: 0.75rem;
 }
 
 .card-tile-barcode-preview {
   width: 100%;
-  height: 36px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
 }
 
 .card-tile-barcode-preview svg {
   width: 100%;
-  height: 36px;
+  height: auto;
 }
 
 .card-tile-barcode-preview canvas {
-  max-height: 36px;
+  max-width: 100%;
+  height: auto;
 }
 
 .card-tile-code {

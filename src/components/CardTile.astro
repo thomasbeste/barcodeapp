@@ -34,16 +34,8 @@ const borderTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
         <div class="card-tile-name-front" style={`color: ${cardColor}`}>{storeName}</div>
       )}
     </div>
-    <div class="card-tile-back" style={`background: ${bgTint}`}>
-      <div class="card-tile-stripe" style={`background: ${cardColor}`}></div>
-      <div class="card-tile-body">
-        <div class="card-tile-name-row">
-          {logoPath && <img class="card-tile-logo" src={`${BASE}api/cards/${id}/logo`} alt="" />}
-          <div class="card-tile-name" style={`color: ${cardColor}`}>{storeName}</div>
-        </div>
-        <div class="card-tile-barcode-preview" data-barcode={barcodeData} data-format={format}></div>
-        <div class="card-tile-code">{barcodeData}</div>
-      </div>
+    <div class="card-tile-back" style={`background: #fff`}>
+      <div class="card-tile-barcode-preview" data-barcode={barcodeData} data-format={format}></div>
     </div>
   </div>
 </div>
