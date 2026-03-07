@@ -23,7 +23,7 @@ const bgTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08)`;
 const borderTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
 ---
 
-<div class="card-tile" data-card-id={id} data-barcode={barcodeData} data-format={format} data-color={cardColor} role="button" tabindex="0"
+<div class="card-tile" data-card-id={id} data-barcode={barcodeData} data-format={format} data-color={cardColor} data-name={storeName} role="button" tabindex="0"
   style={`background: ${bgTint}; border: 2px solid ${borderTint}`}>
   <div class="card-tile-stripe" style={`background: ${cardColor}`}></div>
   <div class="card-tile-body">
