@@ -40,8 +40,10 @@ function openActionSheet(tile: HTMLElement) {
   const name = tile.dataset.name || 'Card';
   actionSheetCardId = id;
 
+  const overlay = document.getElementById('action-sheet-overlay')!;
+  overlay.dataset.cardId = String(id);
   document.getElementById('action-sheet-title')!.textContent = name;
-  document.getElementById('action-sheet-overlay')!.classList.add('active');
+  overlay.classList.add('active');
 }
 
 export async function openBarcodeFromTile(tile: HTMLElement) {

@@ -311,7 +311,7 @@ export function initForms() {
   // Edit button — from action sheet, fetch card data then open edit form in modal
   document.getElementById('action-sheet-edit')!.addEventListener('click', async (e) => {
     e.stopPropagation();
-    const id = getActionSheetCardId();
+    const id = getActionSheetCardId() || Number(document.getElementById('action-sheet-overlay')!.dataset.cardId);
     if (!id) return;
     closeActionSheet();
 
@@ -385,18 +385,21 @@ export function initForms() {
   // Delete button — from action sheet
   document.getElementById('action-sheet-delete')!.addEventListener('click', async (e) => {
     e.stopPropagation();
-    const id = getActionSheetCardId();
+    const id = getActionSheetCardId() || Number(document.getElementById('action-sheet-overlay')!.dataset.cardId);
     if (!id) return;
     closeActionSheet();
 
-    // Small delay to let action sheet close before confirm dialog
-    await new Promise(r => setTimeout(r, 100));
-
     if (!confirm('Delete this card?')) return;
 
-    const res = await fetch(`${BASE}api/cards/${id}`, { method: 'DELETE' });
-    if (!res.ok) {
-      alert('Failed to delete card');
+    try {
+      const res = await fetch(`${BASE}api/cards/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const body = await res.text();
+        alert(`Failed to delete card: ${res.status} ${body}`);
+        return;
+      }
+    } catch (err) {
+      alert(`Failed to delete card: ${err}`);
       return;
     }
 
