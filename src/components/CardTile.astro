@@ -25,17 +25,13 @@ const bgTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08)`;
 const borderTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
 ---
 
-<div class="card-tile" data-card-id={id} data-barcode={barcodeData} data-format={format} data-color={cardColor} data-name={storeName} data-has-logo={logoPath ? 'true' : undefined} role="button" tabindex="0">
-  <div class="card-tile-inner" style={`background: ${bgTint}; border: 2px solid ${borderTint}`}>
-    <div class="card-tile-front" style={`background: ${bgTint}`}>
-      {logoPath ? (
-        <img class="card-tile-logo-front" src={`${BASE}api/cards/${id}/logo`} alt={storeName} />
-      ) : (
-        <div class="card-tile-name-front" style={`color: ${cardColor}`}>{storeName}</div>
-      )}
-    </div>
-    <div class="card-tile-back" style={`background: #fff`}>
-      <div class="card-tile-barcode-preview" data-barcode={barcodeData} data-format={format}></div>
-    </div>
+<div class="card-tile" data-card-id={id} data-barcode={barcodeData} data-format={format} data-color={cardColor} data-name={storeName} data-has-logo={logoPath ? 'true' : undefined} role="button" tabindex="0"
+  style={`background: ${bgTint}; border: 2px solid ${borderTint}`}>
+  <div class="card-tile-face">
+    {logoPath ? (
+      <img class="card-tile-logo-front" src={`${BASE}api/cards/${id}/logo`} alt={storeName} />
+    ) : (
+      <div class="card-tile-name-front" style={`color: ${cardColor}`}>{storeName}</div>
+    )}
   </div>
 </div>

@@ -151,11 +151,7 @@ function setupLongPress(tile: HTMLElement) {
   tile.addEventListener('pointerup', (e) => {
     cancelPress();
     if (!didLongPress) {
-      if (tile.classList.contains('flipped')) {
-        openBarcodeFromTile(tile);
-      } else {
-        tile.classList.add('flipped');
-      }
+      openBarcodeFromTile(tile);
     }
   });
 
