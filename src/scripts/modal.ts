@@ -5,11 +5,11 @@ const BASE = import.meta.env.BASE_URL;
 
 interface CardData {
   id: number;
-  store_name: string;
-  barcode_data: string;
+  storeName: string;
+  barcodeData: string;
   format: string;
   color: string | null;
-  photo_path: string | null;
+  photoPath: string | null;
   notes: string | null;
 }
 
@@ -52,7 +52,7 @@ export async function openBarcodeModal(cardId: number) {
 
   // Populate header
   const nameEl = document.getElementById('barcode-store-name')!;
-  nameEl.textContent = card.store_name;
+  nameEl.textContent = card.storeName;
 
   // Set header color
   if (card.color) {
@@ -63,11 +63,11 @@ export async function openBarcodeModal(cardId: number) {
 
   // Render large barcode
   const renderArea = document.getElementById('barcode-render-area')!;
-  await renderBarcode(renderArea, card.barcode_data, card.format);
+  await renderBarcode(renderArea, card.barcodeData, card.format);
 
   // Photo
   const photoEl = document.getElementById('barcode-photo') as HTMLImageElement;
-  if (card.photo_path) {
+  if (card.photoPath) {
     photoEl.src = `${BASE}api/cards/${card.id}/photo`;
     photoEl.style.display = 'block';
   } else {

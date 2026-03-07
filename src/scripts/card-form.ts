@@ -315,8 +315,8 @@ export function initForms() {
 
     // Populate edit form
     (document.getElementById('edit-card-id') as HTMLInputElement).value = String(card.id);
-    (document.getElementById('edit-store-name') as HTMLInputElement).value = card.store_name;
-    (document.getElementById('edit-barcode-data') as HTMLInputElement).value = card.barcode_data;
+    (document.getElementById('edit-store-name') as HTMLInputElement).value = card.storeName;
+    (document.getElementById('edit-barcode-data') as HTMLInputElement).value = card.barcodeData;
     (document.getElementById('edit-format') as HTMLSelectElement).value = card.format;
     (document.getElementById('edit-notes') as HTMLTextAreaElement).value = card.notes || '';
     (document.getElementById('edit-color') as HTMLInputElement).value = card.color || '#4a90d9';
@@ -381,7 +381,7 @@ export function initForms() {
     const card = getCurrentCard();
     if (!card) return;
 
-    if (!confirm(`Delete "${card.store_name}"?`)) return;
+    if (!confirm(`Delete "${card.storeName}"?`)) return;
 
     const res = await fetch(`${BASE}api/cards/${card.id}`, { method: 'DELETE' });
     if (!res.ok) {
