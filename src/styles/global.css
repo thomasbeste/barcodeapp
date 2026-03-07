@@ -152,41 +152,32 @@ body {
 
 /* ===== Full-screen barcode popout ===== */
 .barcode-fullscreen {
+  display: none;
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   z-index: 200;
   background: #fff;
-  display: none;
   flex-direction: column;
-  animation: popout-in 0.3s ease;
 }
 
 .barcode-fullscreen.active {
   display: flex;
 }
 
-@keyframes popout-in {
-  from {
-    opacity: 0;
-    transform: scale(0.85);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 .barcode-fullscreen-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid #eee;
+  padding: 0.75rem 1rem;
   flex-shrink: 0;
 }
 
 .barcode-fullscreen-header h2 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
@@ -197,7 +188,7 @@ body {
   line-height: 1;
   cursor: pointer;
   color: var(--text-secondary);
-  padding: 0.25rem;
+  padding: 0.25rem 0.5rem;
 }
 
 .barcode-fullscreen-body {
@@ -206,16 +197,26 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
   overflow: auto;
+  padding: 0 0.5rem;
 }
 
 .barcode-fullscreen-render {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   width: 100%;
-  padding: 0 1rem;
+}
+
+.barcode-fullscreen-render svg {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.barcode-fullscreen-render canvas {
+  display: block;
+  width: 80vw !important;
+  max-width: 400px;
+  height: auto !important;
+  margin: 0 auto;
 }
 
 .barcode-value {
@@ -241,7 +242,6 @@ body {
   gap: 0.75rem;
   justify-content: center;
   padding: 0.75rem 1.25rem;
-  border-top: 1px solid #eee;
   flex-shrink: 0;
 }
 

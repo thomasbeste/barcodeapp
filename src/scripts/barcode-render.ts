@@ -38,10 +38,10 @@ export async function renderBarcode(
     container.appendChild(svg);
     const opts = {
       format: FORMAT_MAP[format] || 'CODE128',
-      width: 2,
-      height: 120,
+      width: 3,
+      height: 180,
       displayValue: false,
-      margin: 10,
+      margin: 4,
     };
     try {
       JsBarcode(svg, data, opts);
