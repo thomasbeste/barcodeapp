@@ -23,35 +23,36 @@ export async function renderBarcode(
 
   if (QR_LIKE_FORMATS.includes(format)) {
     const canvas = document.createElement('canvas');
+    // Render at high res, CSS will scale
     await QRCode.toCanvas(canvas, data, {
-      width: 280,
+      width: 600,
       margin: 2,
       color: { dark: '#000000', light: '#ffffff' },
     });
+    canvas.style.width = '70vw';
+    canvas.style.maxWidth = '400px';
+    canvas.style.height = 'auto';
     container.appendChild(canvas);
   } else {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     container.appendChild(svg);
+    const opts = {
+      format: FORMAT_MAP[format] || 'CODE128',
+      width: 2,
+      height: 120,
+      displayValue: false,
+      margin: 10,
+    };
     try {
-      JsBarcode(svg, data, {
-        format: FORMAT_MAP[format] || 'CODE128',
-        width: 2,
-        height: 100,
-        displayValue: true,
-        fontSize: 14,
-        margin: 10,
-      });
+      JsBarcode(svg, data, opts);
     } catch {
-      // Fallback to CODE128 if format fails
-      JsBarcode(svg, data, {
-        format: 'CODE128',
-        width: 2,
-        height: 100,
-        displayValue: true,
-        fontSize: 14,
-        margin: 10,
-      });
+      JsBarcode(svg, data, { ...opts, format: 'CODE128' });
     }
+    // Remove fixed dimensions so CSS can scale the SVG to fill width
+    svg.removeAttribute('width');
+    svg.removeAttribute('height');
+    svg.style.width = '100%';
+    svg.style.height = 'auto';
   }
 
   const valueDiv = document.createElement('div');

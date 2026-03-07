@@ -215,17 +215,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 600px;
-}
-
-.barcode-fullscreen-render svg {
-  width: 100%;
-  height: auto;
-}
-
-.barcode-fullscreen-render canvas {
-  max-width: 80vw;
-  max-height: 50vh;
+  padding: 0 1rem;
 }
 
 .barcode-value {
