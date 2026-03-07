@@ -75,7 +75,8 @@ export function initForms() {
     });
 
     if (!res.ok) {
-      alert('Failed to add card');
+      const err = await res.json().catch(() => ({}));
+      alert('Failed to add card: ' + (err.error || res.status));
       return;
     }
 
@@ -294,7 +295,8 @@ export function initForms() {
     });
 
     if (!res.ok) {
-      alert('Failed to save card');
+      const err = await res.json().catch(() => ({}));
+      alert('Failed to save card: ' + (err.error || res.status));
       return;
     }
 

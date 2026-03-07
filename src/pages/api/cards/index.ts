@@ -21,16 +21,24 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const result = db.insert(schema.cards).values({
-    storeName,
-    barcodeData,
-    format,
-    color: color || null,
-    notes: notes || null,
-  }).returning().get();
+  try {
+    const result = db.insert(schema.cards).values({
+      storeName,
+      barcodeData,
+      format,
+      color: color || null,
+      notes: notes || null,
+    }).returning().get();
 
-  return new Response(JSON.stringify(result), {
-    status: 201,
-    headers: { 'Content-Type': 'application/json' },
-  });
+    return new Response(JSON.stringify(result), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('Failed to insert card:', err);
+    return new Response(JSON.stringify({ error: 'Database error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 };
