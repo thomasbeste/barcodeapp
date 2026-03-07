@@ -4,19 +4,19 @@ import { BARCODE_FORMATS } from '../lib/barcode';
 
 <!-- Full-screen barcode popout -->
 <div class="barcode-fullscreen" id="barcode-modal">
-  <div class="barcode-fullscreen-header">
-    <h2 id="barcode-store-name"></h2>
-    <button class="barcode-fullscreen-close" id="barcode-modal-close">&times;</button>
-  </div>
+  <button class="barcode-fullscreen-close" id="barcode-modal-close">&times;</button>
 
   <div class="barcode-fullscreen-body" id="barcode-view">
-    <div class="barcode-fullscreen-render" id="barcode-render-area"></div>
+    <div class="barcode-card-frame">
+      <div class="barcode-card-header" id="barcode-card-header">
+        <img id="barcode-logo" class="barcode-header-logo" alt="" style="display:none" />
+        <span id="barcode-store-name"></span>
+      </div>
+      <div class="barcode-card-body">
+        <div class="barcode-fullscreen-render" id="barcode-render-area"></div>
+      </div>
+    </div>
     <img class="barcode-fullscreen-photo" id="barcode-photo" alt="Card photo" style="display:none" />
-  </div>
-
-  <div class="barcode-fullscreen-footer">
-    <button class="btn btn-primary" id="barcode-edit-btn">Edit</button>
-    <button class="btn btn-danger" id="barcode-delete-btn">Delete</button>
   </div>
 
   <!-- Edit mode -->
@@ -67,5 +67,15 @@ import { BARCODE_FORMATS } from '../lib/barcode';
         </div>
       </form>
     </div>
+  </div>
+</div>
+
+<!-- Action sheet (long-press on card tiles) -->
+<div class="action-sheet-overlay" id="action-sheet-overlay">
+  <div class="action-sheet">
+    <div class="action-sheet-title" id="action-sheet-title"></div>
+    <button id="action-sheet-edit">Edit Card</button>
+    <button id="action-sheet-delete">Delete Card</button>
+    <button id="action-sheet-cancel">Cancel</button>
   </div>
 </div>

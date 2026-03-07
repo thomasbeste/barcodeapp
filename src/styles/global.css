@@ -61,22 +61,64 @@ body {
   }
 }
 
-/* Card Tile */
+/* Card Tile — flip card */
 .card-tile {
+  perspective: 600px;
+  cursor: pointer;
+}
+
+.card-tile-inner {
+  position: relative;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.5s ease, box-shadow 0.15s;
+  transform-style: preserve-3d;
 }
 
-.card-tile:hover {
-  transform: translateY(-2px);
+.card-tile:hover .card-tile-inner {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.card-tile:active {
-  transform: scale(0.97);
+.card-tile.flipped .card-tile-inner {
+  transform: rotateY(180deg);
+}
+
+.card-tile-front,
+.card-tile-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius);
+}
+
+.card-tile-front {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 1rem;
+}
+
+.card-tile-logo-front {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.card-tile-name-front {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+  word-break: break-word;
+  letter-spacing: 0.02em;
+}
+
+.card-tile-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  overflow: hidden;
 }
 
 .card-tile-stripe {
@@ -88,12 +130,26 @@ body {
   padding: 0.75rem 0.75rem 0.65rem;
 }
 
+.card-tile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-tile-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .card-tile-name {
   font-size: 1rem;
   font-weight: 700;
   word-break: break-word;
   letter-spacing: 0.02em;
-  margin-bottom: 0.5rem;
 }
 
 .card-tile-barcode-preview {
@@ -160,7 +216,7 @@ body {
   height: 100vh;
   height: 100dvh;
   z-index: 200;
-  background: #fff;
+  background: rgba(0, 0, 0, 0.85);
   flex-direction: column;
 }
 
@@ -168,27 +224,26 @@ body {
   display: flex;
 }
 
-.barcode-fullscreen-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  flex-shrink: 0;
-}
-
-.barcode-fullscreen-header h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
+/* Floating close button */
 .barcode-fullscreen-close {
-  background: none;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 210;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
-  color: var(--text-secondary);
-  padding: 0.25rem 0.5rem;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .barcode-fullscreen-body {
@@ -198,7 +253,41 @@ body {
   align-items: center;
   justify-content: center;
   overflow: auto;
-  padding: 0 0.5rem;
+  padding: 1rem;
+}
+
+/* Card frame (Apple Wallet style) */
+.barcode-card-frame {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.barcode-card-header {
+  padding: 1rem 1.25rem;
+  background: var(--primary);
+}
+
+.barcode-header-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+.barcode-card-header span {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.barcode-card-body {
+  background: #fff;
+  padding: 1.5rem 1rem;
 }
 
 .barcode-fullscreen-render {
@@ -213,8 +302,8 @@ body {
 
 .barcode-fullscreen-render canvas {
   display: block;
-  width: 80vw !important;
-  max-width: 400px;
+  width: 100% !important;
+  max-width: 360px;
   height: auto !important;
   margin: 0 auto;
 }
@@ -237,12 +326,81 @@ body {
   margin-top: 1rem;
 }
 
-.barcode-fullscreen-footer {
-  display: flex;
-  gap: 0.75rem;
+/* Long-press feedback on card tiles */
+.card-tile.long-pressing .card-tile-inner {
+  transform: scale(0.95);
+  transition: transform 0.2s;
+}
+.card-tile.flipped.long-pressing .card-tile-inner {
+  transform: rotateY(180deg) scale(0.95);
+}
+
+/* ===== Action Sheet ===== */
+.action-sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 300;
+  align-items: flex-end;
   justify-content: center;
-  padding: 0.75rem 1.25rem;
-  flex-shrink: 0;
+  padding: 0 0.5rem;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.action-sheet-overlay.active {
+  display: flex;
+}
+
+.action-sheet {
+  width: 100%;
+  max-width: 420px;
+  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+  animation: action-sheet-up 0.25s ease-out;
+}
+
+@keyframes action-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.action-sheet-title {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.75rem 1rem 0.5rem;
+  background: var(--card-bg);
+  border-radius: 14px 14px 0 0;
+}
+
+.action-sheet button {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: none;
+  background: var(--card-bg);
+  font-size: 1.05rem;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--primary);
+  border-top: 1px solid #eee;
+}
+
+.action-sheet button:last-child {
+  margin-top: 0.5rem;
+  border-radius: 14px;
+  border-top: none;
+  font-weight: 600;
+}
+
+#action-sheet-delete {
+  color: var(--danger);
+}
+
+.action-sheet button:active {
+  background: #f0f0f0;
 }
 
 /* ===== Add card modal overlay ===== */

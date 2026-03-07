@@ -14,6 +14,11 @@ if (!existsSync(photosDir)) {
   mkdirSync(photosDir, { recursive: true });
 }
 
+const logosDir = join(dataDir, 'logos');
+if (!existsSync(logosDir)) {
+  mkdirSync(logosDir, { recursive: true });
+}
+
 const sqlite = new Database(join(dataDir, 'cards.db'));
 sqlite.pragma('journal_mode = WAL');
 
@@ -31,6 +36,12 @@ sqlite.exec(`
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   )
 `);
+
+// Migrate: add logo_path column if missing
+const columns = sqlite.pragma('table_info(cards)') as { name: string }[];
+if (!columns.some(c => c.name === 'logo_path')) {
+  sqlite.exec('ALTER TABLE cards ADD COLUMN logo_path TEXT');
+}
 
 export const db = drizzle(sqlite, { schema });
 export { schema };

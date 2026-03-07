@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { db, schema } from '../../../../db';
 import { eq, sql } from 'drizzle-orm';
 import { deletePhoto } from '../../../../lib/photos';
+import { deleteLogo } from '../../../../lib/logos';
 
 export const GET: APIRoute = async ({ params }) => {
   const id = Number(params.id);
@@ -63,6 +64,11 @@ export const DELETE: APIRoute = async ({ params }) => {
   // Delete photo if exists
   if (card.photoPath) {
     deletePhoto(card.photoPath);
+  }
+
+  // Delete logo if exists
+  if (card.logoPath) {
+    deleteLogo(card.logoPath);
   }
 
   db.delete(schema.cards).where(eq(schema.cards.id, id)).run();

@@ -5,9 +5,11 @@ interface Props {
   barcodeData: string;
   format: string;
   color?: string | null;
+  logoPath?: string | null;
 }
 
-const { id, storeName, barcodeData, format, color } = Astro.props;
+const { id, storeName, barcodeData, format, color, logoPath } = Astro.props;
+const BASE = import.meta.env.BASE_URL;
 const cardColor = color || '#4a90d9';
 
 function hexToRgb(hex: string) {
@@ -23,12 +25,25 @@ const bgTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08)`;
 const borderTint = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
 ---
 
-<div class="card-tile" data-card-id={id} data-barcode={barcodeData} data-format={format} data-color={cardColor} data-name={storeName} role="button" tabindex="0"
-  style={`background: ${bgTint}; border: 2px solid ${borderTint}`}>
-  <div class="card-tile-stripe" style={`background: ${cardColor}`}></div>
-  <div class="card-tile-body">
-    <div class="card-tile-name" style={`color: ${cardColor}`}>{storeName}</div>
-    <div class="card-tile-barcode-preview" data-barcode={barcodeData} data-format={format}></div>
-    <div class="card-tile-code">{barcodeData}</div>
+<div class="card-tile" data-card-id={id} data-barcode={barcodeData} data-format={format} data-color={cardColor} data-name={storeName} data-has-logo={logoPath ? 'true' : undefined} role="button" tabindex="0">
+  <div class="card-tile-inner" style={`background: ${bgTint}; border: 2px solid ${borderTint}`}>
+    <div class="card-tile-front" style={`background: ${bgTint}`}>
+      {logoPath ? (
+        <img class="card-tile-logo-front" src={`${BASE}api/cards/${id}/logo`} alt={storeName} />
+      ) : (
+        <div class="card-tile-name-front" style={`color: ${cardColor}`}>{storeName}</div>
+      )}
+    </div>
+    <div class="card-tile-back" style={`background: ${bgTint}`}>
+      <div class="card-tile-stripe" style={`background: ${cardColor}`}></div>
+      <div class="card-tile-body">
+        <div class="card-tile-name-row">
+          {logoPath && <img class="card-tile-logo" src={`${BASE}api/cards/${id}/logo`} alt="" />}
+          <div class="card-tile-name" style={`color: ${cardColor}`}>{storeName}</div>
+        </div>
+        <div class="card-tile-barcode-preview" data-barcode={barcodeData} data-format={format}></div>
+        <div class="card-tile-code">{barcodeData}</div>
+      </div>
+    </div>
   </div>
 </div>

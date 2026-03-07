@@ -8,6 +8,7 @@ export const cards = sqliteTable('cards', {
   format: text('format').notNull(),
   color: text('color'),
   photoPath: text('photo_path'),
+  logoPath: text('logo_path'),
   notes: text('notes'),
   createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
   updatedAt: text('updated_at').notNull().default(sql`(datetime('now'))`),

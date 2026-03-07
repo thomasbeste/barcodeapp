@@ -1,4 +1,4 @@
-import { closeBarcodeModal, closeAddModal, getCurrentCardId } from './modal';
+import { closeBarcodeModal, closeAddModal, getCurrentCardId, getActionSheetCardId, closeActionSheet } from './modal';
 import { startScanner, stopScanner, scanImageFile } from './scanner';
 
 const BASE = import.meta.env.BASE_URL;
@@ -308,10 +308,11 @@ export function initForms() {
 
   setupColorSwatches('scan-color-options', 'scan-color');
 
-  // Edit button — fetch card data from API only when editing
-  document.getElementById('barcode-edit-btn')!.addEventListener('click', async () => {
-    const id = getCurrentCardId();
+  // Edit button — from action sheet, fetch card data then open edit form in modal
+  document.getElementById('action-sheet-edit')!.addEventListener('click', async () => {
+    const id = getActionSheetCardId();
     if (!id) return;
+    closeActionSheet();
 
     const res = await fetch(`${BASE}api/cards/${id}`);
     if (!res.ok) return;
@@ -328,17 +329,19 @@ export function initForms() {
       s.classList.toggle('selected', (s as HTMLElement).dataset.color === (card.color || '#4a90d9'));
     });
 
+    // Open the barcode modal in edit mode directly
+    const modal = document.getElementById('barcode-modal')!;
     document.getElementById('barcode-view')!.style.display = 'none';
-    (document.querySelector('.barcode-fullscreen-footer') as HTMLElement).style.display = 'none';
     document.getElementById('barcode-edit')!.style.display = 'block';
     document.getElementById('barcode-edit')!.classList.add('active');
+    modal.classList.add('active');
   });
 
   function exitEditMode() {
     document.getElementById('barcode-edit')!.style.display = 'none';
     document.getElementById('barcode-edit')!.classList.remove('active');
     document.getElementById('barcode-view')!.style.display = '';
-    (document.querySelector('.barcode-fullscreen-footer') as HTMLElement).style.display = '';
+    closeBarcodeModal();
   }
 
   // Edit cancel / back
@@ -378,10 +381,11 @@ export function initForms() {
     window.location.reload();
   });
 
-  // Delete button
-  document.getElementById('barcode-delete-btn')!.addEventListener('click', async () => {
-    const id = getCurrentCardId();
+  // Delete button — from action sheet
+  document.getElementById('action-sheet-delete')!.addEventListener('click', async () => {
+    const id = getActionSheetCardId();
     if (!id) return;
+    closeActionSheet();
 
     if (!confirm('Delete this card?')) return;
 
@@ -391,7 +395,6 @@ export function initForms() {
       return;
     }
 
-    closeBarcodeModal();
     window.location.reload();
   });
 }
