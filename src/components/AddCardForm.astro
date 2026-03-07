@@ -1,0 +1,92 @@
+---
+import { BARCODE_FORMATS } from '../lib/barcode';
+---
+
+<div class="modal-overlay" id="add-card-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Add Card</h2>
+      <button class="modal-close" id="add-modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="manual">Manual</button>
+        <button class="tab-btn" data-tab="scan">Scan</button>
+      </div>
+
+      <!-- Manual tab -->
+      <div id="tab-manual">
+        <form id="add-card-form">
+          <div class="form-group">
+            <label for="add-store-name">Store Name</label>
+            <input type="text" id="add-store-name" required placeholder="e.g. IKEA" />
+          </div>
+          <div class="form-group">
+            <label for="add-barcode-data">Barcode Number</label>
+            <input type="text" id="add-barcode-data" required placeholder="e.g. 1234567890" />
+          </div>
+          <div class="form-group">
+            <label for="add-format">Format</label>
+            <select id="add-format">
+              {BARCODE_FORMATS.map(f => (
+                <option value={f.value}>{f.label}</option>
+              ))}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Color</label>
+            <div class="color-options" id="add-color-options">
+              {['#4a90d9', '#e53e3e', '#38a169', '#d69e2e', '#805ad5', '#dd6b20', '#319795', '#d53f8c', '#718096'].map(c => (
+                <div class="color-swatch" data-color={c} style={`background: ${c}`}></div>
+              ))}
+            </div>
+            <input type="hidden" id="add-color" value="#4a90d9" />
+          </div>
+          <div class="form-group">
+            <label for="add-notes">Notes (optional)</label>
+            <textarea id="add-notes" rows="2" placeholder="Any notes..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="add-photo">Card Photo (optional)</label>
+            <input type="file" id="add-photo" accept="image/*" capture="environment" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%">Add Card</button>
+        </form>
+      </div>
+
+      <!-- Scan tab -->
+      <div id="tab-scan" style="display:none">
+        <div class="scanner-container" id="scanner-container">
+          <div id="scanner-reader"></div>
+        </div>
+        <p style="text-align:center; margin-top:0.75rem; color: var(--text-secondary); font-size: 0.85rem;">
+          Point camera at barcode
+        </p>
+        <div id="scan-result" style="display:none; margin-top:1rem;">
+          <div class="form-group">
+            <label for="scan-store-name">Store Name</label>
+            <input type="text" id="scan-store-name" required placeholder="e.g. IKEA" />
+          </div>
+          <div class="form-group">
+            <label>Detected Code</label>
+            <input type="text" id="scan-barcode-data" readonly />
+          </div>
+          <div class="form-group">
+            <label>Format</label>
+            <input type="text" id="scan-format" readonly />
+          </div>
+          <div class="form-group">
+            <label>Color</label>
+            <div class="color-options" id="scan-color-options">
+              {['#4a90d9', '#e53e3e', '#38a169', '#d69e2e', '#805ad5', '#dd6b20', '#319795', '#d53f8c', '#718096'].map(c => (
+                <div class="color-swatch" data-color={c} style={`background: ${c}`}></div>
+              ))}
+            </div>
+            <input type="hidden" id="scan-color" value="#4a90d9" />
+          </div>
+          <button class="btn btn-primary" style="width:100%" id="scan-save-btn">Save Card</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+---
+import CardTile from './CardTile.astro';
+import type { Card } from '../db/schema';
+
+interface Props {
+  cards: Card[];
+}
+
+const { cards } = Astro.props;
+---
+
+{cards.length === 0 ? (
+  <div class="empty-state">
+    <p>No cards yet</p>
+    <small>Tap + to add your first loyalty card</small>
+  </div>
+) : (
+  <div class="card-grid">
+    {cards.map(card => (
+      <CardTile
+        id={card.id}
+        storeName={card.storeName}
+        format={card.format}
+        color={card.color}
+      />
+    ))}
+  </div>
+)}

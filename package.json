@@ -1,0 +1,27 @@
+{
+  "name": "barcodeapp",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.4",
+    "astro": "^5.17.1",
+    "better-sqlite3": "^12.6.2",
+    "drizzle-orm": "^0.45.1",
+    "html5-qrcode": "^2.3.8",
+    "jsbarcode": "^3.12.3",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/jsbarcode": "^3.11.4",
+    "@types/qrcode": "^1.5.6",
+    "drizzle-kit": "^0.31.9",
+    "sharp": "^0.34.5"
+  }
+}

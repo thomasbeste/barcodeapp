@@ -1,0 +1,19 @@
+---
+interface Props {
+  id: number;
+  storeName: string;
+  format: string;
+  color?: string | null;
+}
+
+const { id, storeName, format, color } = Astro.props;
+const stripeColor = color || '#4a90d9';
+---
+
+<div class="card-tile" data-card-id={id} role="button" tabindex="0">
+  <div class="card-tile-stripe" style={`background: ${stripeColor}`}></div>
+  <div class="card-tile-body">
+    <div class="card-tile-name">{storeName}</div>
+    <div class="card-tile-format">{format}</div>
+  </div>
+</div>

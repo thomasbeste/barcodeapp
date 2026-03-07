@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+import CardGrid from '../components/CardGrid.astro';
+import BarcodeModal from '../components/BarcodeModal.astro';
+import AddCardForm from '../components/AddCardForm.astro';
+import { db, schema } from '../db';
+
+const cards = db.select().from(schema.cards).orderBy(schema.cards.storeName).all();
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#4a90d9" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Loyalty Cards</title>
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+</head>
+<body>
+  <header class="header">
+    <h1>Loyalty Cards</h1>
+  </header>
+
+  <main>
+    <CardGrid cards={cards} />
+  </main>
+
+  <button class="fab" id="fab-add" aria-label="Add card">+</button>
+
+  <BarcodeModal />
+  <AddCardForm />
+
+  <script>
+    import { initModals } from '../scripts/modal';
+    import { initForms } from '../scripts/card-form';
+
+    initModals();
+    initForms();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+</body>
+</html>
