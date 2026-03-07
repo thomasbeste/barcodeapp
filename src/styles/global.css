@@ -61,60 +61,22 @@ body {
   }
 }
 
-/* Card Tile — flip card */
-.card-flip-container {
-  perspective: 800px;
-  cursor: pointer;
-}
-
+/* Card Tile */
 .card-tile {
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.5s ease;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-}
-
-.card-flip-container.flipped .card-tile {
-  transform: rotateY(180deg);
-}
-
-.card-tile-front,
-.card-tile-back {
-  backface-visibility: hidden;
-  border-radius: var(--radius);
-  background: var(--card-bg);
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
-.card-tile-front {
-  position: relative;
-  border-radius: var(--radius);
+.card-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.card-tile-back {
-  position: absolute;
-  inset: 0;
-  transform: rotateY(180deg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 0.5rem;
-}
-
-.card-tile-back svg,
-.card-tile-back canvas {
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.card-tile-back .back-label {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  margin-top: 0.25rem;
-  text-align: center;
-  word-break: break-all;
+.card-tile:active {
+  transform: scale(0.97);
 }
 
 .card-tile-stripe {
@@ -164,12 +126,6 @@ body {
   white-space: nowrap;
 }
 
-.card-tile-format {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-top: 0.25rem;
-}
-
 /* FAB */
 .fab {
   position: fixed;
@@ -194,7 +150,112 @@ body {
 .fab:hover { background: var(--primary-hover); }
 .fab:active { transform: scale(0.95); }
 
-/* Modal overlay */
+/* ===== Full-screen barcode popout ===== */
+.barcode-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #fff;
+  display: none;
+  flex-direction: column;
+  animation: popout-in 0.3s ease;
+}
+
+.barcode-fullscreen.active {
+  display: flex;
+}
+
+@keyframes popout-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.barcode-fullscreen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.barcode-fullscreen-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.barcode-fullscreen-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+}
+
+.barcode-fullscreen-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.barcode-fullscreen-render {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.barcode-fullscreen-render svg {
+  width: 100%;
+  height: auto;
+}
+
+.barcode-fullscreen-render canvas {
+  max-width: 80vw;
+  max-height: 50vh;
+}
+
+.barcode-value {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  word-break: break-all;
+  text-align: center;
+  margin-top: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.barcode-fullscreen-photo {
+  max-width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.barcode-fullscreen-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+/* ===== Add card modal overlay ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -247,46 +308,7 @@ body {
   padding: 1.25rem;
 }
 
-/* Barcode display */
-.barcode-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 1rem;
-}
-
-.barcode-container svg,
-.barcode-container canvas,
-.barcode-container img {
-  max-width: 100%;
-}
-
-.barcode-value {
-  font-family: monospace;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  word-break: break-all;
-  text-align: center;
-}
-
-.barcode-photo {
-  width: 100%;
-  max-height: 200px;
-  object-fit: contain;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-}
-
-/* Barcode modal actions */
-.barcode-actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  padding: 1rem 1.25rem;
-  border-top: 1px solid #eee;
-}
-
+/* Buttons */
 .btn {
   padding: 0.5rem 1.25rem;
   border: none;
@@ -487,22 +509,13 @@ body {
   border-color: var(--text);
 }
 
-/* Edit form within modal */
+/* Edit form within barcode fullscreen */
 .edit-form {
-  padding: 1.25rem;
   display: none;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .edit-form.active {
   display: block;
-}
-
-/* Responsive barcode modal - full screen on mobile */
-@media (max-width: 480px) {
-  .modal-content.barcode-modal {
-    max-width: 100%;
-    max-height: 100%;
-    height: 100%;
-    border-radius: 0;
-  }
 }

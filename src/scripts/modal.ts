@@ -1,7 +1,7 @@
 import { renderBarcode } from './barcode-render';
 import { stopScanner } from './scanner';
 
-const BASE = import.meta.env.BASE_URL; // e.g. '/' or '/barcode/'
+const BASE = import.meta.env.BASE_URL;
 
 interface CardData {
   id: number;
@@ -48,10 +48,20 @@ export async function openBarcodeModal(cardId: number) {
   const card: CardData = await res.json();
   currentCard = card;
 
-  // Populate view
+  const modal = document.getElementById('barcode-modal')!;
+
+  // Populate header
   const nameEl = document.getElementById('barcode-store-name')!;
   nameEl.textContent = card.store_name;
 
+  // Set header color
+  if (card.color) {
+    nameEl.style.color = card.color;
+  } else {
+    nameEl.style.color = '';
+  }
+
+  // Render large barcode
   const renderArea = document.getElementById('barcode-render-area')!;
   await renderBarcode(renderArea, card.barcode_data, card.format);
 
@@ -65,12 +75,12 @@ export async function openBarcodeModal(cardId: number) {
   }
 
   // Show view, hide edit
-  document.getElementById('barcode-view')!.style.display = 'block';
+  document.getElementById('barcode-view')!.style.display = '';
   document.getElementById('barcode-edit')!.style.display = 'none';
+  document.getElementById('barcode-edit')!.classList.remove('active');
+  (document.querySelector('.barcode-fullscreen-footer') as HTMLElement).style.display = '';
 
-  const modal = document.getElementById('barcode-modal')!;
   modal.classList.add('active');
-
   await requestWakeLock();
 }
 
@@ -90,8 +100,6 @@ export function closeAddModal() {
 export function openAddModal() {
   const modal = document.getElementById('add-card-modal')!;
   modal.classList.add('active');
-
-  // Reset to manual tab
   switchTab('manual');
 }
 
@@ -108,11 +116,8 @@ function switchTab(tab: string) {
 }
 
 export function initModals() {
-  // Barcode modal
+  // Barcode fullscreen close
   document.getElementById('barcode-modal-close')!.addEventListener('click', closeBarcodeModal);
-  document.getElementById('barcode-modal')!.addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeBarcodeModal();
-  });
 
   // Add modal
   document.getElementById('add-modal-close')!.addEventListener('click', closeAddModal);
@@ -131,44 +136,12 @@ export function initModals() {
     });
   });
 
-  // Card tiles — tap to flip, tap again (when flipped) to open modal
-  document.querySelectorAll('.card-flip-container').forEach(container => {
-    const el = container as HTMLElement;
-    let barcodeRendered = false;
-
-    el.addEventListener('click', async () => {
-      if (el.classList.contains('flipped')) {
-        // Already flipped — open the full modal
-        const id = Number(el.dataset.cardId);
-        openBarcodeModal(id);
-      } else {
-        // Flip to show barcode
-        el.classList.add('flipped');
-
-        // Render barcode on the back if not done yet
-        if (!barcodeRendered) {
-          barcodeRendered = true;
-          const { renderBarcode } = await import('./barcode-render');
-          const target = el.querySelector('.barcode-target') as HTMLElement;
-          const data = el.dataset.barcode!;
-          const format = el.dataset.format!;
-          await renderBarcode(target, data, format);
-          // Remove the value text (it's shown in the label already)
-          const valueDiv = target.querySelector('.barcode-value');
-          if (valueDiv) valueDiv.remove();
-        }
-      }
+  // Card tiles — tap to open full-screen barcode
+  document.querySelectorAll('.card-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      const id = Number((tile as HTMLElement).dataset.cardId);
+      openBarcodeModal(id);
     });
-  });
-
-  // Clicking outside a flipped card unflips it
-  document.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement;
-    if (!target.closest('.card-flip-container')) {
-      document.querySelectorAll('.card-flip-container.flipped').forEach(c => {
-        c.classList.remove('flipped');
-      });
-    }
   });
 
   // Keyboard: Escape to close

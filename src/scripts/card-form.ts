@@ -327,22 +327,21 @@ export function initForms() {
     });
 
     document.getElementById('barcode-view')!.style.display = 'none';
+    (document.querySelector('.barcode-fullscreen-footer') as HTMLElement).style.display = 'none';
     document.getElementById('barcode-edit')!.style.display = 'block';
     document.getElementById('barcode-edit')!.classList.add('active');
   });
 
-  // Edit cancel / back
-  document.getElementById('edit-cancel-btn')!.addEventListener('click', () => {
+  function exitEditMode() {
     document.getElementById('barcode-edit')!.style.display = 'none';
     document.getElementById('barcode-edit')!.classList.remove('active');
-    document.getElementById('barcode-view')!.style.display = 'block';
-  });
+    document.getElementById('barcode-view')!.style.display = '';
+    (document.querySelector('.barcode-fullscreen-footer') as HTMLElement).style.display = '';
+  }
 
-  document.getElementById('edit-back-btn')!.addEventListener('click', () => {
-    document.getElementById('barcode-edit')!.style.display = 'none';
-    document.getElementById('barcode-edit')!.classList.remove('active');
-    document.getElementById('barcode-view')!.style.display = 'block';
-  });
+  // Edit cancel / back
+  document.getElementById('edit-cancel-btn')!.addEventListener('click', exitEditMode);
+  document.getElementById('edit-back-btn')!.addEventListener('click', exitEditMode);
 
   // Edit form submit
   const editForm = document.getElementById('edit-card-form') as HTMLFormElement;
