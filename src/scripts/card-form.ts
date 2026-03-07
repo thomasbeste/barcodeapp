@@ -1,6 +1,8 @@
 import { openBarcodeModal, closeBarcodeModal, closeAddModal, getCurrentCard } from './modal';
 import { startScanner, stopScanner, scanImageFile } from './scanner';
 
+const BASE = import.meta.env.BASE_URL;
+
 function setupColorSwatches(containerId: string, inputId: string) {
   const container = document.getElementById(containerId)!;
   const input = document.getElementById(inputId) as HTMLInputElement;
@@ -50,7 +52,7 @@ async function uploadPhoto(cardId: number, file: File) {
   const resized = await resizeImage(file);
   const form = new FormData();
   form.append('photo', resized, 'photo.jpg');
-  await fetch(`/api/cards/${cardId}/photo`, { method: 'POST', body: form });
+  await fetch(`${BASE}api/cards/${cardId}/photo`, { method: 'POST', body: form });
 }
 
 export function initForms() {
@@ -68,7 +70,7 @@ export function initForms() {
     const color = (document.getElementById('add-color') as HTMLInputElement).value;
     const notes = (document.getElementById('add-notes') as HTMLTextAreaElement).value.trim();
 
-    const res = await fetch('/api/cards', {
+    const res = await fetch(`${BASE}api/cards`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ storeName, barcodeData, format, color, notes }),
@@ -288,7 +290,7 @@ export function initForms() {
     const format = (document.getElementById('scan-format') as HTMLInputElement).value;
     const color = (document.getElementById('scan-color') as HTMLInputElement).value;
 
-    const res = await fetch('/api/cards', {
+    const res = await fetch(`${BASE}api/cards`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ storeName, barcodeData, format, color }),
@@ -354,7 +356,7 @@ export function initForms() {
     const color = (document.getElementById('edit-color') as HTMLInputElement).value;
     const notes = (document.getElementById('edit-notes') as HTMLTextAreaElement).value.trim();
 
-    const res = await fetch(`/api/cards/${id}`, {
+    const res = await fetch(`${BASE}api/cards/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ storeName, barcodeData, format, color, notes }),
@@ -382,7 +384,7 @@ export function initForms() {
 
     if (!confirm(`Delete "${card.store_name}"?`)) return;
 
-    const res = await fetch(`/api/cards/${card.id}`, { method: 'DELETE' });
+    const res = await fetch(`${BASE}api/cards/${card.id}`, { method: 'DELETE' });
     if (!res.ok) {
       alert('Failed to delete card');
       return;

@@ -90,13 +90,14 @@ if (Astro.request.method === 'POST') {
       e.preventDefault();
       error.style.display = 'none';
       const formData = new FormData(form);
-      const res = await fetch('/api/login', {
+      const BASE = import.meta.env.BASE_URL;
+      const res = await fetch(`${BASE}api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ api_key: formData.get('api_key') }),
       });
       if (res.ok) {
-        window.location.href = '/';
+        window.location.href = BASE;
       } else {
         error.style.display = 'block';
       }

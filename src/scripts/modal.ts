@@ -1,6 +1,8 @@
 import { renderBarcode } from './barcode-render';
 import { stopScanner } from './scanner';
 
+const BASE = import.meta.env.BASE_URL; // e.g. '/' or '/barcode/'
+
 interface CardData {
   id: number;
   store_name: string;
@@ -40,7 +42,7 @@ export function getCurrentCard(): CardData | null {
 }
 
 export async function openBarcodeModal(cardId: number) {
-  const res = await fetch(`/api/cards/${cardId}`);
+  const res = await fetch(`${BASE}api/cards/${cardId}`);
   if (!res.ok) return;
 
   const card: CardData = await res.json();
@@ -56,7 +58,7 @@ export async function openBarcodeModal(cardId: number) {
   // Photo
   const photoEl = document.getElementById('barcode-photo') as HTMLImageElement;
   if (card.photo_path) {
-    photoEl.src = `/api/cards/${card.id}/photo`;
+    photoEl.src = `${BASE}api/cards/${card.id}/photo`;
     photoEl.style.display = 'block';
   } else {
     photoEl.style.display = 'none';
@@ -129,12 +131,44 @@ export function initModals() {
     });
   });
 
-  // Card tiles
-  document.querySelectorAll('.card-tile').forEach(tile => {
-    tile.addEventListener('click', () => {
-      const id = Number((tile as HTMLElement).dataset.cardId);
-      openBarcodeModal(id);
+  // Card tiles — tap to flip, tap again (when flipped) to open modal
+  document.querySelectorAll('.card-flip-container').forEach(container => {
+    const el = container as HTMLElement;
+    let barcodeRendered = false;
+
+    el.addEventListener('click', async () => {
+      if (el.classList.contains('flipped')) {
+        // Already flipped — open the full modal
+        const id = Number(el.dataset.cardId);
+        openBarcodeModal(id);
+      } else {
+        // Flip to show barcode
+        el.classList.add('flipped');
+
+        // Render barcode on the back if not done yet
+        if (!barcodeRendered) {
+          barcodeRendered = true;
+          const { renderBarcode } = await import('./barcode-render');
+          const target = el.querySelector('.barcode-target') as HTMLElement;
+          const data = el.dataset.barcode!;
+          const format = el.dataset.format!;
+          await renderBarcode(target, data, format);
+          // Remove the value text (it's shown in the label already)
+          const valueDiv = target.querySelector('.barcode-value');
+          if (valueDiv) valueDiv.remove();
+        }
+      }
     });
+  });
+
+  // Clicking outside a flipped card unflips it
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.card-flip-container')) {
+      document.querySelectorAll('.card-flip-container.flipped').forEach(c => {
+        c.classList.remove('flipped');
+      });
+    }
   });
 
   // Keyboard: Escape to close

@@ -61,24 +61,59 @@ body {
   }
 }
 
-/* Card Tile */
+/* Card Tile — flip card */
+.card-flip-container {
+  perspective: 800px;
+  cursor: pointer;
+}
+
 .card-tile {
-  background: var(--card-bg);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+.card-flip-container.flipped .card-tile {
+  transform: rotateY(180deg);
+}
+
+.card-tile-front,
+.card-tile-back {
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  background: var(--card-bg);
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card-tile-front {
   position: relative;
 }
 
-.card-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+.card-tile-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
 }
 
-.card-tile:active {
-  transform: scale(0.98);
+.card-tile-back svg,
+.card-tile-back canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.card-tile-back .back-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+  text-align: center;
+  word-break: break-all;
 }
 
 .card-tile-stripe {

@@ -1,17 +1,20 @@
 import { defineMiddleware } from 'astro:middleware';
 
+const BASE = import.meta.env.BASE_URL; // e.g. '/' or '/barcode/'
+
 export const onRequest = defineMiddleware(async ({ request, cookies, redirect, url }, next) => {
   // Allow static assets
   if (
     url.pathname.startsWith('/_astro/') ||
     url.pathname === '/favicon.ico' ||
-    url.pathname === '/login'
+    url.pathname === `${BASE}login` ||
+    url.pathname === `${BASE}login/`
   ) {
     return next();
   }
 
   // Allow login POST
-  if (url.pathname === '/api/login') {
+  if (url.pathname === `${BASE}api/login` || url.pathname === `${BASE}api/login/`) {
     return next();
   }
 
@@ -30,12 +33,12 @@ export const onRequest = defineMiddleware(async ({ request, cookies, redirect, u
   }
 
   // Not authenticated — redirect browser requests, 401 for API
-  if (url.pathname.startsWith('/api/')) {
+  if (url.pathname.includes('/api/')) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  return redirect('/login');
+  return redirect(`${BASE}login`);
 });
