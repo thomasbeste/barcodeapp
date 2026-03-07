@@ -1,7 +1,8 @@
 import { renderBarcode } from './barcode-render';
 import { stopScanner } from './scanner';
 
-const BASE = import.meta.env.BASE_URL;
+const _base = import.meta.env.BASE_URL;
+const BASE = _base.endsWith('/') ? _base : _base + '/';
 
 let wakeLock: WakeLockSentinel | null = null;
 let currentCardId: number | null = null;

@@ -1,7 +1,8 @@
 import { closeBarcodeModal, closeAddModal, getActionSheetCardId, closeActionSheet } from './modal';
 import { startScanner, stopScanner, scanImageFile } from './scanner';
 
-const BASE = import.meta.env.BASE_URL;
+const _base = import.meta.env.BASE_URL;
+const BASE = _base.endsWith('/') ? _base : _base + '/';
 
 function setupColorSwatches(containerId: string, inputId: string) {
   const container = document.getElementById(containerId)!;
@@ -316,10 +317,7 @@ export function initForms() {
     closeActionSheet();
 
     const res = await fetch(`${BASE}api/cards/${id}`);
-    if (!res.ok) {
-      alert(`Failed to load card: ${res.status} URL=${BASE}api/cards/${id}`);
-      return;
-    }
+    if (!res.ok) return;
     const card = await res.json();
 
     (document.getElementById('edit-card-id') as HTMLInputElement).value = String(card.id);
@@ -394,16 +392,14 @@ export function initForms() {
 
     if (!confirm('Delete this card?')) return;
 
-    const deleteUrl = `${BASE}api/cards/${id}`;
     try {
-      const res = await fetch(deleteUrl, { method: 'DELETE' });
+      const res = await fetch(`${BASE}api/cards/${id}`, { method: 'DELETE' });
       if (!res.ok) {
-        const body = await res.text();
-        alert(`Failed to delete card: ${res.status} URL=${deleteUrl} ${body}`);
+        alert('Failed to delete card');
         return;
       }
-    } catch (err) {
-      alert(`Failed to delete card: ${err}`);
+    } catch {
+      alert('Failed to delete card');
       return;
     }
 
