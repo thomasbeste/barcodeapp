@@ -45,3 +45,27 @@ if (!columns.some(c => c.name === 'logo_path')) {
 
 export const db = drizzle(sqlite, { schema });
 export { schema };
+
+// Backfill logos for existing cards that don't have one
+import { fetchAndSaveLogo } from '../lib/logos';
+import { eq, isNull, sql } from 'drizzle-orm';
+
+const cardsWithoutLogos = db.select({ id: schema.cards.id, storeName: schema.cards.storeName })
+  .from(schema.cards)
+  .where(isNull(schema.cards.logoPath))
+  .all();
+
+if (cardsWithoutLogos.length > 0) {
+  console.log(`[logos] Backfilling logos for ${cardsWithoutLogos.length} card(s)...`);
+  for (const card of cardsWithoutLogos) {
+    fetchAndSaveLogo(card.id, card.storeName).then(logoFile => {
+      if (logoFile) {
+        db.update(schema.cards)
+          .set({ logoPath: logoFile, updatedAt: sql`datetime('now')` })
+          .where(eq(schema.cards.id, card.id))
+          .run();
+        console.log(`[logos] Fetched logo for "${card.storeName}"`);
+      }
+    }).catch(() => {});
+  }
+}
