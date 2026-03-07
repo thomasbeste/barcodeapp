@@ -20,6 +20,11 @@ export const onRequest = defineMiddleware(async ({ request, cookies, redirect, u
 
   const apiKey = import.meta.env.API_KEY;
 
+  // If no API_KEY configured, skip auth entirely
+  if (!apiKey) {
+    return next();
+  }
+
   // Check Authorization header first
   const authHeader = request.headers.get('Authorization');
   if (authHeader?.startsWith('Bearer ') && authHeader.slice(7) === apiKey) {
@@ -28,7 +33,7 @@ export const onRequest = defineMiddleware(async ({ request, cookies, redirect, u
 
   // Check cookie
   const cookieKey = cookies.get('api_key')?.value;
-  if (cookieKey === apiKey) {
+  if (cookieKey && cookieKey === apiKey) {
     return next();
   }
 
